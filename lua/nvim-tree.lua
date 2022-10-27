@@ -3,6 +3,7 @@ local api = vim.api
 
 local lib = require "nvim-tree.lib"
 local log = require "nvim-tree.log"
+local notify = require "nvim-tree.notify"
 local colors = require "nvim-tree.colors"
 local renderer = require "nvim-tree.renderer"
 local view = require "nvim-tree.view"
@@ -653,6 +654,9 @@ local DEFAULT_OPTS = { -- BEGIN_DEFAULT_OPTS
       watcher = false,
     },
   },
+  notify = {
+    default_level = vim.log.levels.INFO
+  }
 } -- END_DEFAULT_OPTS
 
 local function merge_options(conf)
@@ -708,13 +712,13 @@ local function validate_options(conf)
   validate(conf, DEFAULT_OPTS, "")
 
   if msg then
-    utils.notify.warn(msg .. " | see :help nvim-tree-setup for available configuration options")
+    notify.warn(msg .. " | see :help nvim-tree-setup for available configuration options")
   end
 end
 
 function M.setup(conf)
   if vim.fn.has "nvim-0.7" == 0 then
-    utils.notify.warn "nvim-tree.lua requires Neovim 0.7 or higher"
+    notify.warn "nvim-tree.lua requires Neovim 0.7 or higher"
     return
   end
 
@@ -741,6 +745,7 @@ function M.setup(conf)
   manage_netrw(opts.disable_netrw, opts.hijack_netrw)
 
   M.config = opts
+  require("nvim-tree.notify").setup(opts)
   require("nvim-tree.log").setup(opts)
 
   log.line("config", "default config + user")
